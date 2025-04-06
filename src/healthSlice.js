@@ -23,6 +23,18 @@ const healthSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    fetchMetricsByNameRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchMetricsByNameSuccess(state, action) {
+      state.metrics = action.payload;
+      state.loading = false;
+    },
+    fetchMetricsByNameFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
     addMetricValueRequest(state, action) {
       state.loading = true;
     },
@@ -67,6 +79,9 @@ export const {
   fetchMetricsRequest,
   fetchMetricsSuccess,
   fetchMetricsFailure,
+  fetchMetricsByNameRequest,
+  fetchMetricsByNameSuccess,
+  fetchMetricsByNameFailure,
   fetchIndicatorsRequest,
   fetchIndicatorsSuccess,
   fetchIndicatorsFailure,

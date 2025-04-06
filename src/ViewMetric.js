@@ -62,7 +62,7 @@ const ViewMetric = () => {
 
   useEffect(() => {
       dispatch(fetchIndicatorsRequest({page: 0, limit: 25, sort: orderBy.toUpperCase(), direction: order.toUpperCase()}));
-      dispatch(fetchMetricsRequest({page: 0, limit: 5}));
+      dispatch(fetchMetricsRequest({page: 0, limit: 25, sort: 'NAME'}));
     }, [dispatch]);
   const handleSort = (sort) => {
     const isAsc = orderBy === sort && order === "asc";
@@ -92,10 +92,6 @@ const ViewMetric = () => {
     else {
       dispatch(fetchIndicatorsRequest({page: 0, limit: 25, sort: orderBy.toUpperCase(), direction: order.toUpperCase()}));
     }
-  }
-
-  if(error) {
-    return <p>Sh</p>
   }
 
   return (

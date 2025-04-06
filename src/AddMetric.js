@@ -30,18 +30,17 @@ const AddMetric = () => {
   const [value, setValue] = useState("");
   const [date, setDate] = useState(new Date());
 
-
   useEffect(() => {
-    dispatch(fetchMetricsRequest({page: 0, limit: 5}));
+    dispatch(fetchMetricsRequest({page: 0, limit: 5, sort: "NAME"}));
   }, [dispatch]);
 
   console.log(metrics);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("send");
+    var isoDateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
     if(metric && value) {
-      dispatch(addMetricValueRequest({indicatorTypeId: metric, value: value, date: new Date(date).toISOString()}));
+      dispatch(addMetricValueRequest({indicatorTypeId: metric, value: value, date: isoDateTime}));
       setValue("");
   }
 }

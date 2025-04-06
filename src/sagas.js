@@ -3,6 +3,9 @@ import {
     fetchMetricsRequest,
     fetchMetricsSuccess,
     fetchMetricsFailure,
+    fetchMetricsByNameRequest,
+    fetchMetricsByNameSuccess,
+    fetchMetricsByNameFailure,
     addMetricValueRequest,
     addMetricValueSuccess,
     addMetricValueFailure,
@@ -15,9 +18,15 @@ import {
 } from "./healthSlice";
 
 const api = {
-  fetchMetrics: (page, limit) => fetch("http://localhost:3000/metrics?" + new URLSearchParams({
+  fetchMetrics: (page, limit, sort) => fetch("http://localhost:3000/metrics?" + new URLSearchParams({
     page: page,
-    limit: limit
+    limit: limit,
+    sort: sort
+  }) ).then((res) => res.json()),
+  fetchMetricsByName: (page, limit, name) => fetch("http://localhost:3000/metrics?" + new URLSearchParams({
+    page: page,
+    limit: limit,
+    name: name
   }) ).then((res) => res.json()),
   addMetricValue: (metricValue) => 
     fetch("http://localhost:3000/metrics/" + metricValue.indicatorTypeId + '/value', {
@@ -42,12 +51,23 @@ const api = {
 function* fetchMetricsSaga(action) {
   try {
     console.log(action);
-    const metrics = yield call(api.fetchMetrics, action.payload.page, action.payload.limit);
+    const metrics = yield call(api.fetchMetrics, action.payload.page, action.payload.limit, action.payload.sort);
     console.log('anything');
     console.log(metrics);
     yield put(fetchMetricsSuccess(metrics));
   } catch (error) {
     yield put(fetchMetricsFailure(error.message));
+  }
+}
+
+function* fetchMetricsByNameSaga(action) {
+  try {
+    console.log(action);
+    const metrics = yield call(api.fetchMetricsByName, action.payload.page, action.payload.limit, action.payload.name);
+    console.log(metrics);
+    yield put(fetchMetricsByNameSuccess(metrics));
+  } catch (error) {
+    yield put(fetchMetricsByNameFailure(error.message));
   }
 }
 
@@ -64,8 +84,7 @@ function* addMetricValueSaga(action) {
 function* fetchIndicatorsSaga(action) {
   try {
     const indicators = yield call(api.fetchIndicators, action.payload.page, action.payload.limit, action.payload.sort, action.payload.direction);
-    console.log(indicators);
-    yield put(fetchIndicatorsSuccess(indicators));
+    yield put(fetchIndicatorsSuccess(indicators.content));
   } catch (error) {
     yield put(fetchIndicatorsFailure(error.message));
   }
@@ -74,8 +93,8 @@ function* fetchIndicatorsSaga(action) {
 function* fetchIndicatorsByMetricSaga(action) {
   try {
     const indicators = yield call(api.fetchIndicatorsByMetric, action.payload.metricId, action.payload.page, action.payload.limit, action.payload.sort, action.payload.direction);
-    console.log(indicators);
-    yield put(fetchIndicatorsByMetricSuccess(indicators));
+    console.log('got them!');
+    yield put(fetchIndicatorsByMetricSuccess(indicators.content));
   } catch (error) {
     yield put(fetchIndicatorsByMetricFailure(error.message));
   }
@@ -85,6 +104,7 @@ function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
   yield all([
     takeEvery(fetchMetricsRequest.type, fetchMetricsSaga),
+    takeEvery(fetchMetricsByNameRequest.type, fetchMetricsByNameSaga),
     takeEvery(addMetricValueRequest.type, addMetricValueSaga),
     takeEvery(fetchIndicatorsRequest.type, fetchIndicatorsSaga),
     takeEvery(fetchIndicatorsByMetricRequest.type, fetchIndicatorsByMetricSaga)

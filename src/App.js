@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Metric from "./Metric";
 import PositionedMenu from "./IndicatorMenu";
 import { AppBar, Toolbar, Tabs, Tab, Container } from "@mui/material";
@@ -7,6 +7,15 @@ import AddMetric from './AddMetric'
 import IndicatorMenu from "./IndicatorMenu";
 import ViewMetric from "./ViewMetric";
 import Statistic from "./Statistic";
+
+import FoodList from './diet/FoodList.js';
+import AddDiet from './diet/AddDiet.js';
+import AllDiets from './diet/AllDiets';
+import DietInfo from './diet/DietInfo.js';
+import ActualDiets from './diet/ActualDiets.js';
+
+import PlannedMeals from "./diet/PlannedMeals.js";
+import NextMeals from "./diet/NextMeals.js";
 
 const pages = [
   { label: "Metrics", path: "/add-metric" },
@@ -46,6 +55,8 @@ const NavigationTabs = () => {
 };
 
 function App() {
+  const [foodList, setFoodList] = useState([]);
+
   return (
     <div className="">
       <Router>
@@ -60,6 +71,13 @@ function App() {
         <Route path="/add-metric" element={<AddMetric />}/>
         <Route path="/view-metric" element={<ViewMetric />}/>
         <Route path="/metric-statistic" element={<Statistic />}/>
+        <Route path="/add-food" element={<FoodList onAddFood={(f) => setFoodList([...foodList, f])} />} />
+        <Route path="/diet" element={<AddDiet />} />
+        <Route path="/diets" element={<AllDiets />} />
+        <Route path="/diets/:id" element={<DietInfo />} />
+        <Route path="/actual-diets" element={<ActualDiets />} />
+        <Route path="/planned-meals" element={<PlannedMeals />} />
+        <Route path="/next-meals" element={<NextMeals />} />
       </Routes>
       </Router>
     </div>

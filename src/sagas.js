@@ -14,7 +14,31 @@ import {
     fetchIndicatorsRequest,
     fetchIndicatorsByMetricSuccess,
     fetchIndicatorsByMetricFailure,
-    fetchIndicatorsByMetricRequest
+    fetchIndicatorsByMetricRequest,
+    fetchNutritionValuesSuccess,
+    fetchNutritionValuesFailure,
+    fetchNutritionValuesRequest,
+    addFoodRequest,
+    addFoodSuccess,
+    addFoodFailure,
+    fetchFoodsRequest,
+    fetchFoodsSuccess,
+    fetchFoodsFailure,
+    addDietRequest,
+    addDietSuccess,
+    addDietFailure,
+    fetchDietsByTitleRequest,
+    fetchDietsByTitleSuccess,
+    fetchDietsByTitleFailure,
+    fetchActualDietsRequest,
+    fetchActualDietsSuccess,
+    fetchActualDietsFailure,
+    fetchPlannedMealsRequest,
+    fetchPlannedMealsSuccess,
+    fetchPlannedMealsFailure,
+    fetchNextMealsRequest,
+    fetchNextMealsSuccess,
+    fetchNextMealsFailure
 } from "./healthSlice";
 
 const api = {
@@ -45,6 +69,48 @@ const api = {
     limit: limit,
     sort: sort,
     direction: direction
+  }) ).then((res) => res.json()),
+  fetchNutritionValues: (page, limit) => fetch("http://localhost:3000/values?" + new URLSearchParams({
+    page: page,
+    limit: limit
+  }) ).then((res) => res.json()),
+  addFood: (food) => 
+    fetch("http://localhost:3000/food", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(food),
+    }).then((res) => res.headers.get('Location')),
+  fetchFoods: (title, page, limit, sort) => fetch("http://localhost:3000/foods?" + new URLSearchParams({
+      title: title,
+      page: page,
+      limit: limit,
+      sort: sort
+    }) ).then((res) => res.json()),
+  addDiet: (diet) => 
+      fetch("http://localhost:3000/diet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(diet),
+      }).then((res) => res.headers.get('Location')),
+  fetchDietsByTitle: (title, page, limit) => fetch("http://localhost:3000/diets?" + new URLSearchParams({
+    title: title,
+    page: page,
+    limit: limit
+  }) ).then((res) => res.json()),
+  fetchActualDiets: (page, limit) => fetch("http://localhost:3000/diets?" + new URLSearchParams({
+    actual: true,
+    page: page,
+    limit: limit
+  }) ).then((res) => res.json()),
+  fetchPlannedMeals: (page, limit) => fetch("http://localhost:3000/meals?" + new URLSearchParams({
+    planned: true,
+    page: page,
+    limit: limit
+  }) ).then((res) => res.json()),
+  fetchNextMeals: (page, limit) => fetch("http://localhost:3000/meals?" + new URLSearchParams({
+    next: true,
+    page: page,
+    limit: limit
   }) ).then((res) => res.json()),
 };
 
@@ -81,6 +147,16 @@ function* addMetricValueSaga(action) {
   }
 }
 
+function* addFoodSaga(action) {
+  try {
+    const food = yield call(api.addFood, action.payload);
+    console.log("add food saga " + food);
+    yield put(addFoodSuccess(food));
+  } catch (error) {
+    yield put(addFoodFailure(error.message));
+  }
+}
+
 function* fetchIndicatorsSaga(action) {
   try {
     const indicators = yield call(api.fetchIndicators, action.payload.page, action.payload.limit, action.payload.sort, action.payload.direction);
@@ -100,6 +176,84 @@ function* fetchIndicatorsByMetricSaga(action) {
   }
 }
 
+function* fetchNutritionValuesSaga(action) {
+  try {
+    console.log(action);
+    const nutritionValues = yield call(api.fetchNutritionValues, action.payload.page, action.payload.limit);
+    console.log('anything');
+    console.log(nutritionValues);
+    yield put(fetchNutritionValuesSuccess(nutritionValues));
+  } catch (error) {
+    yield put(fetchNutritionValuesFailure(error.message));
+  }
+}
+
+function* fetchFoodsSaga(action) {
+  try {
+    console.log(action);
+    const foods = yield call(api.fetchFoods, action.payload.title, action.payload.page, action.payload.limit, action.payload.sort);
+    console.log('fetch foods saga');
+    console.log(foods);
+    yield put(fetchFoodsSuccess(foods));
+  } catch (error) {
+    yield put(fetchFoodsFailure(error.message));
+  }
+}
+
+function* addDietSaga(action) {
+  try {
+    const food = yield call(api.addDiet, action.payload);
+    console.log("add diet saga " + food);
+    yield put(addDietSuccess(food));
+  } catch (error) {
+    yield put(addDietFailure(error.message));
+  }
+}
+
+function* fetchDietsByTitleSaga(action) {
+  try {
+    const diets = yield call(api.fetchDietsByTitle, action.payload.title, action.payload.page, action.payload.limit);
+    console.log('got diets');
+    console.log(diets);
+    yield put(fetchDietsByTitleSuccess(diets));
+  } catch (error) {
+    yield put(fetchDietsByTitleFailure(error.message));
+  }
+}
+
+function* fetchActualDietsSaga(action) {
+  try {
+    const diets = yield call(api.fetchActualDiets, action.payload.page, action.payload.limit);
+    console.log('got diets');
+    console.log(diets);
+    yield put(fetchActualDietsSuccess(diets));
+  } catch (error) {
+    yield put(fetchActualDietsFailure(error.message));
+  }
+}
+
+function* fetchPlannedMealsSaga(action) {
+  try {
+    const meals = yield call(api.fetchPlannedMeals, action.payload.page, action.payload.limit);
+    console.log('got meals');
+    console.log(meals);
+    yield put(fetchPlannedMealsSuccess(meals));
+  } catch (error) {
+    yield put(fetchPlannedMealsFailure(error.message));
+  }
+}
+
+function* fetchNextMealsSaga(action) {
+  try {
+    const meals = yield call(api.fetchNextMeals, action.payload.page, action.payload.limit);
+    console.log('got next meals');
+    console.log(meals);
+    yield put(fetchNextMealsSuccess(meals));
+  } catch (error) {
+    yield put(fetchNextMealsFailure(error.message));
+  }
+}
+
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
   yield all([
@@ -107,7 +261,16 @@ function* watchShopActions() {
     takeEvery(fetchMetricsByNameRequest.type, fetchMetricsByNameSaga),
     takeEvery(addMetricValueRequest.type, addMetricValueSaga),
     takeEvery(fetchIndicatorsRequest.type, fetchIndicatorsSaga),
-    takeEvery(fetchIndicatorsByMetricRequest.type, fetchIndicatorsByMetricSaga)
+    takeEvery(fetchIndicatorsByMetricRequest.type, fetchIndicatorsByMetricSaga),
+    takeEvery(fetchNutritionValuesRequest.type, fetchNutritionValuesSaga),
+    takeEvery(addFoodRequest.type, addFoodSaga),
+    takeEvery(fetchFoodsRequest.type, fetchFoodsSaga),
+    takeEvery(addDietRequest.type, addDietSaga),
+    takeEvery(fetchDietsByTitleRequest.type, fetchDietsByTitleSaga),
+    takeEvery(fetchActualDietsRequest.type, fetchActualDietsSaga),
+    takeEvery(fetchPlannedMealsRequest.type, fetchPlannedMealsSaga),
+    takeEvery(fetchNextMealsRequest.type, fetchNextMealsSaga)
+
   ]);
 }
 

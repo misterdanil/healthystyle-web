@@ -11,7 +11,8 @@ const initialState = {
   addedDiet: null,
   diets: [],
   selectedDiet: null,
-  meals: []
+  meals: [],
+  nutritionStatistic: []
 };
 
 const healthSlice = createSlice({
@@ -105,6 +106,20 @@ const healthSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    fetchNutritionValuesByValueRequest(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchNutritionValuesByValueSuccess(state, action) {
+      console.log("got values by value");
+      state.nutritionValues = action.payload.content;
+      console.log(state.nutritionValues);
+      state.loading = false;
+    },
+    fetchNutritionValuesByValueFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
     fetchFoodsRequest(state) {
       state.loading = true;
       state.error = null;
@@ -185,6 +200,19 @@ const healthSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
     },
+    fetchNutritionStatisticRequest(state, action) {
+      state.loading = true;
+    },
+    fetchNutritionStatisticSuccess(state, action) {
+      state.loading = false;
+      state.nutritionStatistic = action.payload.content;
+      console.log('next meals');
+      console.log(state.meals);
+    },
+    fetchNutritionStatisticFailure(state, action) {
+        state.loading = false;
+        state.error = action.payload;
+    }
   },
 });
 
@@ -207,6 +235,9 @@ export const {
   fetchNutritionValuesRequest,
   fetchNutritionValuesSuccess,
   fetchNutritionValuesFailure,
+  fetchNutritionValuesByValueRequest,
+  fetchNutritionValuesByValueSuccess,
+  fetchNutritionValuesByValueFailure,
   addFoodRequest,
   addFoodSuccess,
   addFoodFailure,
@@ -228,7 +259,10 @@ export const {
   fetchPlannedMealsFailure,
   fetchNextMealsRequest,
   fetchNextMealsSuccess,
-  fetchNextMealsFailure
+  fetchNextMealsFailure,
+  fetchNutritionStatisticRequest,
+  fetchNutritionStatisticSuccess,
+  fetchNutritionStatisticFailure
 } = healthSlice.actions;
 
 export default healthSlice.reducer;

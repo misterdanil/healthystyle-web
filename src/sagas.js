@@ -18,6 +18,9 @@ import {
     fetchNutritionValuesSuccess,
     fetchNutritionValuesFailure,
     fetchNutritionValuesRequest,
+    fetchNutritionValuesByValueRequest,
+    fetchNutritionValuesByValueSuccess,
+    fetchNutritionValuesByValueFailure,
     addFoodRequest,
     addFoodSuccess,
     addFoodFailure,
@@ -38,7 +41,10 @@ import {
     fetchPlannedMealsFailure,
     fetchNextMealsRequest,
     fetchNextMealsSuccess,
-    fetchNextMealsFailure
+    fetchNextMealsFailure,
+    fetchNutritionStatisticRequest,
+    fetchNutritionStatisticSuccess,
+    fetchNutritionStatisticFailure
 } from "./healthSlice";
 
 const api = {
@@ -71,6 +77,11 @@ const api = {
     direction: direction
   }) ).then((res) => res.json()),
   fetchNutritionValues: (page, limit) => fetch("http://localhost:3000/values?" + new URLSearchParams({
+    page: page,
+    limit: limit
+  }) ).then((res) => res.json()),
+  fetchNutritionValuesByValue: (value, page, limit) => fetch("http://localhost:3000/values?" + new URLSearchParams({
+    value: value,
     page: page,
     limit: limit
   }) ).then((res) => res.json()),
@@ -111,6 +122,14 @@ const api = {
     next: true,
     page: page,
     limit: limit
+  }) ).then((res) => res.json()),
+  fetchNutritionStatistic: (nutritionValueId, start, end, page, limit, range) => fetch("http://localhost:3000/nutritions/" + nutritionValueId + '/values?' + new URLSearchParams({
+    statistic: true,
+    start: start,
+    end: end,
+    page: page,
+    limit: limit,
+    range: range
   }) ).then((res) => res.json()),
 };
 
@@ -188,6 +207,17 @@ function* fetchNutritionValuesSaga(action) {
   }
 }
 
+function* fetchNutritionValuesByValueSaga(action) {
+  try {
+    console.log(action);
+    const nutritionValues = yield call(api.fetchNutritionValuesByValue, action.payload.value, action.payload.page, action.payload.limit);
+    console.log(nutritionValues);
+    yield put(fetchNutritionValuesByValueSuccess(nutritionValues));
+  } catch (error) {
+    yield put(fetchNutritionValuesByValueFailure(error.message));
+  }
+}
+
 function* fetchFoodsSaga(action) {
   try {
     console.log(action);
@@ -254,6 +284,17 @@ function* fetchNextMealsSaga(action) {
   }
 }
 
+function* fetchNutritionStatisticSaga(action) {
+  try {
+    const statistic = yield call(api.fetchNutritionStatistic, action.payload.nutritionValueId, action.payload.start, action.payload.end, action.payload.page, action.payload.limit, action.payload.range);
+    console.log('got staistic');
+    console.log(statistic);
+    yield put(fetchNutritionStatisticSuccess(statistic));
+  } catch (error) {
+    yield put(fetchNutritionStatisticFailure(error.message));
+  }
+}
+
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
   yield all([
@@ -263,14 +304,15 @@ function* watchShopActions() {
     takeEvery(fetchIndicatorsRequest.type, fetchIndicatorsSaga),
     takeEvery(fetchIndicatorsByMetricRequest.type, fetchIndicatorsByMetricSaga),
     takeEvery(fetchNutritionValuesRequest.type, fetchNutritionValuesSaga),
+    takeEvery(fetchNutritionValuesByValueRequest.type, fetchNutritionValuesByValueSaga),
     takeEvery(addFoodRequest.type, addFoodSaga),
     takeEvery(fetchFoodsRequest.type, fetchFoodsSaga),
     takeEvery(addDietRequest.type, addDietSaga),
     takeEvery(fetchDietsByTitleRequest.type, fetchDietsByTitleSaga),
     takeEvery(fetchActualDietsRequest.type, fetchActualDietsSaga),
     takeEvery(fetchPlannedMealsRequest.type, fetchPlannedMealsSaga),
-    takeEvery(fetchNextMealsRequest.type, fetchNextMealsSaga)
-
+    takeEvery(fetchNextMealsRequest.type, fetchNextMealsSaga),
+    takeEvery(fetchNutritionStatisticRequest.type, fetchNutritionStatisticSaga)
   ]);
 }
 

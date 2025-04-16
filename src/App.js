@@ -17,6 +17,8 @@ import ActualDiets from './diet/ActualDiets.js';
 import PlannedMeals from "./diet/PlannedMeals.js";
 import NextMeals from "./diet/NextMeals.js";
 
+import FoodValue from "./diet/FoodValue.js";
+
 const pages = [
   { label: "Metrics", path: "/add-metric" },
   { label: "About", path: "/about" },
@@ -78,6 +80,7 @@ function App() {
         <Route path="/actual-diets" element={<ActualDiets />} />
         <Route path="/planned-meals" element={<PlannedMeals />} />
         <Route path="/next-meals" element={<NextMeals />} />
+        <Route path="/food-values" element={<FoodValue />} />
       </Routes>
       </Router>
     </div>

@@ -44,7 +44,13 @@ import {
     fetchNextMealsFailure,
     fetchNutritionStatisticRequest,
     fetchNutritionStatisticSuccess,
-    fetchNutritionStatisticFailure
+    fetchNutritionStatisticFailure,
+    fetchExercisesSuccess,
+    fetchExercisesFailure,
+    fetchExercisesRequest,
+    addExerciseRequest,
+    addExerciseSuccess,
+    addExerciseFailure,
 } from "./healthSlice";
 
 const api = {
@@ -131,6 +137,18 @@ const api = {
     limit: limit,
     range: range
   }) ).then((res) => res.json()),
+  fetchExercises: (title, page, limit, sort) => fetch("http://localhost:3000/exercises?" + new URLSearchParams({
+    title: title,
+    page: page,
+    limit: limit,
+    sort: sort
+  }) ).then((res) => res.json()),
+  addExercise: (diet) => 
+    fetch("http://localhost:3000/exercise", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(diet),
+    }).then((res) => res.headers.get('Location')),
 };
 
 function* fetchMetricsSaga(action) {
@@ -295,6 +313,26 @@ function* fetchNutritionStatisticSaga(action) {
   }
 }
 
+function* fetchExercisesSaga(action) {
+  try {
+    const exercises = yield call(api.fetchExercises, action.payload.title, action.payload.page, action.payload.limit, action.payload.sort);
+    console.log(exercises);
+    yield put(fetchExercisesSuccess(exercises));
+  } catch (error) {
+    yield put(fetchExercisesFailure(error.message));
+  }
+}
+
+function* addExerciseSaga(action) {
+  try {
+    const exercise = yield call(api.addExercise, action.payload);
+    console.log("add exercise saga " + exercise);
+    yield put(addExerciseSuccess(exercise));
+  } catch (error) {
+    yield put(addExerciseFailure(error.message));
+  }
+}
+
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
   yield all([
@@ -312,7 +350,9 @@ function* watchShopActions() {
     takeEvery(fetchActualDietsRequest.type, fetchActualDietsSaga),
     takeEvery(fetchPlannedMealsRequest.type, fetchPlannedMealsSaga),
     takeEvery(fetchNextMealsRequest.type, fetchNextMealsSaga),
-    takeEvery(fetchNutritionStatisticRequest.type, fetchNutritionStatisticSaga)
+    takeEvery(fetchNutritionStatisticRequest.type, fetchNutritionStatisticSaga),
+    takeEvery(fetchExercisesRequest.type, fetchExercisesSaga),
+    takeEvery(addExerciseRequest.type, addExerciseSaga)
   ]);
 }
 

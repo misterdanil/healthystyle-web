@@ -12,7 +12,9 @@ const initialState = {
   diets: [],
   selectedDiet: null,
   meals: [],
-  nutritionStatistic: []
+  nutritionStatistic: [],
+  exercises: [],
+  addedExercise: null
 };
 
 const healthSlice = createSlice({
@@ -212,7 +214,34 @@ const healthSlice = createSlice({
     fetchNutritionStatisticFailure(state, action) {
         state.loading = false;
         state.error = action.payload;
-    }
+    },
+    fetchExercisesRequest(state, action) {
+        state.loading = true;
+    },
+    fetchExercisesSuccess(state, action) {
+      state.loading = false;
+      state.exercises = action.payload.content;
+      console.log('exercises');
+      console.log(state.exercises);
+    },
+    fetchExercisesFailure(state, action) {
+        state.loading = false;
+        state.error = action.payload;
+    },
+    addExerciseRequest(state, action) {
+      console.log('add exercise request');
+      state.loading = true;
+    },
+    addExerciseSuccess(state, action) {
+      console.log("added exercise");
+      console.log(action);
+      state.loading = false;
+      state.addedExercise = action;
+    },
+    addExerciseFailure(state, action) {
+        state.loading = false;
+        state.error = action.payload;
+    },
   },
 });
 
@@ -262,7 +291,13 @@ export const {
   fetchNextMealsFailure,
   fetchNutritionStatisticRequest,
   fetchNutritionStatisticSuccess,
-  fetchNutritionStatisticFailure
+  fetchNutritionStatisticFailure,
+  fetchExercisesRequest,
+  fetchExercisesSuccess,
+  fetchExercisesFailure,
+  addExerciseRequest,
+  addExerciseSuccess,
+  addExerciseFailure,
 } = healthSlice.actions;
 
 export default healthSlice.reducer;

@@ -14,7 +14,12 @@ const initialState = {
   meals: [],
   nutritionStatistic: [],
   exercises: [],
-  addedExercise: null
+  addedExercise: null,
+  addedSport: null,
+  sports: [],
+  trains: [],
+  sportStatistic: [],
+  addedSetMark: null
 };
 
 const healthSlice = createSlice({
@@ -242,6 +247,85 @@ const healthSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
     },
+
+    addSportRequest(state, action) {
+      console.log('add sport request');
+      console.log(action.payload);
+      state.loading = true;
+    },
+    addSportSuccess(state, action) {
+      console.log("added sport");
+      console.log(action);
+      state.loading = false;
+      state.addedSport = action;
+    },
+    addSportFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    fetchSportsRequest(state, action) {
+      state.loading = true;
+  },
+    fetchSportsSuccess(state, action) {
+      state.loading = false;
+      state.sports = action.payload;
+      console.log('sports');
+      console.log(state.sports);
+  },
+    fetchSportsFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+  },
+  fetchPlannedTrainsRequest(state, action) {
+    state.loading = true;
+  },
+  fetchPlannedTrainsSuccess(state, action) {
+    state.loading = false;
+    state.trains = action.payload;
+    console.log('trains');
+    console.log(state.trains);
+  },
+  fetchPlannedTrainsFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchSportStatisticRequest(state, action) {
+    state.loading = true;
+  },
+  fetchSportStatisticSuccess(state, action) {
+    state.loading = false;
+    state.sportStatistic = action.payload.content;
+    console.log('sport statistic');
+    console.log(state.sportStatistic);
+  },
+  fetchSportStatisticFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchSportStatisticByDateRequest(state, action) {
+    state.loading = true;
+  },
+  fetchSportStatisticByDateSuccess(state, action) {
+    state.loading = false;
+    state.sportStatistic = action.payload.content;
+    console.log('sport statistic');
+    console.log(state.sportStatistic);
+  },
+  fetchSportStatisticByDateFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addSetMarkRequest(state, action) {
+    state.loading = true;
+  },
+  addSetMarkSuccess(state, action) {
+    state.loading = false;
+    state.addedSetMark = action.payload;
+  },
+  addSetMarkFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
   },
 });
 
@@ -298,6 +382,24 @@ export const {
   addExerciseRequest,
   addExerciseSuccess,
   addExerciseFailure,
+  addSportRequest,
+  addSportSuccess,
+  addSportFailure,
+  fetchSportsRequest,
+  fetchSportsSuccess,
+  fetchSportsFailure,
+  fetchPlannedTrainsRequest,
+  fetchPlannedTrainsSuccess,
+  fetchPlannedTrainsFailure,
+  fetchSportStatisticRequest,
+  fetchSportStatisticSuccess,
+  fetchSportStatisticFailure,
+  fetchSportStatisticByDateRequest,
+  fetchSportStatisticByDateSuccess,
+  fetchSportStatisticByDateFailure,
+  addSetMarkRequest,
+  addSetMarkSuccess,
+  addSetMarkFailure,
 } = healthSlice.actions;
 
 export default healthSlice.reducer;

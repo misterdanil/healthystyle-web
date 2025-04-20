@@ -51,6 +51,24 @@ import {
     addExerciseRequest,
     addExerciseSuccess,
     addExerciseFailure,
+    addSportRequest,
+    addSportSuccess,
+    addSportFailure,
+    fetchSportsRequest,
+    fetchSportsSuccess,
+    fetchSportsFailure,
+    fetchPlannedTrainsRequest,
+    fetchPlannedTrainsSuccess,
+    fetchPlannedTrainsFailure,
+    fetchSportStatisticRequest,
+    fetchSportStatisticSuccess,
+    fetchSportStatisticFailure,
+    fetchSportStatisticByDateRequest,
+    fetchSportStatisticByDateSuccess,
+    fetchSportStatisticByDateFailure,
+    addSetMarkRequest,
+    addSetMarkSuccess,
+    addSetMarkFailure,
 } from "./healthSlice";
 
 const api = {
@@ -149,6 +167,40 @@ const api = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(diet),
     }).then((res) => res.headers.get('Location')),
+  addSport: (sport) => 
+      fetch("http://localhost:3000/sport", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sport),
+      }).then((res) => res.headers.get('Location')),
+  fetchSports: (description, page, limit) => fetch("http://localhost:3000/sports?" + new URLSearchParams({
+      description: description,
+      page: page,
+      limit: limit
+    }) ).then((res) => res.json()),
+  fetchPlannedTrains: (page, limit) => fetch("http://localhost:3000/trains?" + new URLSearchParams({
+      planned: true,
+      page: page,
+      limit: limit
+    }) ).then((res) => res.json()),
+  fetchSportStatistic: (start, end, page, limit, range) => fetch("http://localhost:3000/sports/statistic?" + new URLSearchParams({
+      start: start,
+      end: end,
+      page: page,
+      limit: limit,
+      range: range
+    }) ).then((res) => res.json()),
+    fetchSportStatisticByDate: (date, page, limit) => fetch("http://localhost:3000/sports/statistic?" + new URLSearchParams({
+      date: date,
+      page: page,
+      limit: limit,
+    }) ).then((res) => res.json()),
+    addSetMark: (result, setId) => 
+      fetch("http://localhost:3000/sets/" + setId + "/result" , {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(result),
+      }).then((res) => res.headers.get('Location')),
 };
 
 function* fetchMetricsSaga(action) {
@@ -332,6 +384,59 @@ function* addExerciseSaga(action) {
     yield put(addExerciseFailure(error.message));
   }
 }
+function* addSportSaga(action) {
+  try {
+    const sport = yield call(api.addSport, action.payload);
+    console.log("add sport saga " + sport);
+    yield put(addSportSuccess(sport));
+  } catch (error) {
+    yield put(addSportFailure(error.message));
+  }
+}
+function* fetchSportsSaga(action) {
+  try {
+    const sports = yield call(api.fetchSports, action.payload.description, action.payload.page, action.payload.limit);
+    console.log(sports);
+    yield put(fetchSportsSuccess(sports));
+  } catch (error) {
+    yield put(fetchSportsFailure(error.message));
+  }
+}
+function* fetchPlannedTrainsSaga(action) {
+  try {
+    const plannedTrains = yield call(api.fetchPlannedTrains, action.payload.page, action.payload.limit);
+    console.log(plannedTrains);
+    yield put(fetchPlannedTrainsSuccess(plannedTrains));
+  } catch (error) {
+    yield put(fetchPlannedTrainsFailure(error.message));
+  }
+}
+function* fetchSportStatisticSaga(action) {
+  try {
+    const sportStatistic = yield call(api.fetchSportStatistic, action.payload.start, action.payload.end, action.payload.page, action.payload.limit, action.payload.range);
+    console.log(sportStatistic);
+    yield put(fetchSportStatisticSuccess(sportStatistic));
+  } catch (error) {
+    yield put(fetchSportStatisticFailure(error.message));
+  }
+}
+function* fetchSportStatisticByDateSaga(action) {
+  try {
+    const sportStatistic = yield call(api.fetchSportStatisticByDate, action.payload.date, action.payload.page, action.payload.limit);
+    console.log(sportStatistic);
+    yield put(fetchSportStatisticByDateSuccess(sportStatistic));
+  } catch (error) {
+    yield put(fetchSportStatisticByDateFailure(error.message));
+  }
+}
+function* addSetMarkSaga(action) {
+  try {
+    const setMark = yield call(api.addSetMark, action.payload.result, action.payload.setId);
+    yield put(addSetMarkSuccess(action.payload.setId));
+  } catch (error) {
+    yield put(addSetMarkFailure(error.message));
+  }
+}
 
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
@@ -352,7 +457,13 @@ function* watchShopActions() {
     takeEvery(fetchNextMealsRequest.type, fetchNextMealsSaga),
     takeEvery(fetchNutritionStatisticRequest.type, fetchNutritionStatisticSaga),
     takeEvery(fetchExercisesRequest.type, fetchExercisesSaga),
-    takeEvery(addExerciseRequest.type, addExerciseSaga)
+    takeEvery(addExerciseRequest.type, addExerciseSaga),
+    takeEvery(addSportRequest.type, addSportSaga),
+    takeEvery(fetchSportsRequest.type, fetchSportsSaga),
+    takeEvery(fetchPlannedTrainsRequest.type, fetchPlannedTrainsSaga),
+    takeEvery(fetchSportStatisticRequest.type, fetchSportStatisticSaga),
+    takeEvery(fetchSportStatisticByDateRequest.type, fetchSportStatisticByDateSaga),
+    takeEvery(addSetMarkRequest.type, addSetMarkSaga)
   ]);
 }
 

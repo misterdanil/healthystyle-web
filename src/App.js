@@ -20,6 +20,10 @@ import NextMeals from "./diet/NextMeals.js";
 import FoodValue from "./diet/FoodValue.js";
 
 import Exercise from './sport/Exercise.js';
+import AddSport from './sport/AddSport.js';
+import AllSports from './sport/AllSports.js';
+import PlannedTrains from './sport/PlannedTrains.js';
+import SportsStatistic from './sport/SportStatistic.js';
 
 const pages = [
   { label: "Metrics", path: "/add-metric" },
@@ -84,6 +88,10 @@ function App() {
         <Route path="/next-meals" element={<NextMeals />} />
         <Route path="/food-values" element={<FoodValue />} />
         <Route path="/exercises" element={<Exercise />} />
+        <Route path="/sport" element={<AddSport />} />
+        <Route path="/sports" element={<AllSports />} />
+        <Route path="/planned-trains" element={<PlannedTrains />} />
+        <Route path="/sport-statistic" element={<SportsStatistic />} />
       </Routes>
       </Router>
     </div>

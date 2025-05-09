@@ -1,4 +1,4 @@
-import { call, put, takeEvery, all } from "redux-saga/effects";
+import { call, put, takeEvery, all, actionChannel } from "redux-saga/effects";
 import {
     fetchMetricsRequest,
     fetchMetricsSuccess,
@@ -69,6 +69,33 @@ import {
     addSetMarkRequest,
     addSetMarkSuccess,
     addSetMarkFailure,
+    fetchCategoriesRequest,
+    fetchCategoriesSuccess,
+    fetchCategoriesFailure,
+    addArticleRequest,
+    addArticleSuccess,
+    addArticleFailure,
+    fetchArticleRequest,
+    fetchArticleSuccess,
+    fetchArticleFailure,
+    fetchFragmentsRequest,
+    fetchFragmentsSuccess,
+    fetchFragmentsFailure,
+    fetchArticlesByTitleRequest,
+    fetchArticlesByTitleSuccess,
+    fetchArticlesByTitleFailure,
+    addMarkRequest,
+    addMarkSuccess,
+    addMarkFailure,
+    fetchFilteredArticlesRequest,
+    fetchFilteredArticlesSuccess,
+    fetchFilteredArticlesFailure,
+    addCommentRequest,
+    addCommentSuccess,
+    addCommentFailure,
+    fetchRootCommentsRequest,
+    fetchRootCommentsSuccess,
+    fetchRootCommentsFailure
 } from "./healthSlice";
 
 const api = {
@@ -201,6 +228,49 @@ const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result),
       }).then((res) => res.headers.get('Location')),
+    fetchCategories: (title, page, limit) => fetch("http://localhost:3000/categories?" + new URLSearchParams({
+        title: title,
+        page: page,
+        limit: limit,
+      }) ).then((res) => res.json()),
+    addArticle: (article, category) => fetch("http://localhost:3000/categories/" + category + '/article', {
+      method: "POST",
+      // headers: { "Content-Type": "application/json" },
+      body: article,
+      }).then((res) => res.json()),
+    fetchArticle: (articleId) => fetch("http://localhost:3000/articles/" + articleId).then((res) => res.json()),
+    fetchFragments: (articleId, page, limit) => fetch("http://localhost:3000/articles/" + articleId + "/fragments?" + new URLSearchParams({
+      page: page,
+      limit: limit,
+    }) ).then((res) => res.json()),
+    fetchArticlesByTitle: (title, page, limit) => fetch("http://localhost:3000/articles?" + new URLSearchParams({
+      title: title,
+      page: page,
+      limit: limit,
+    }) ).then((res) => res.json()),
+    addMark: (articleId, mark) => fetch("http://localhost:3000/articles/" + articleId + '/mark', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(mark),
+      }).then((res) => res.headers.get('Location')),
+    fetchFilteredArticles: (categoryId, title, sort, period, page, limit) => fetch("http://localhost:3000/articles?" + new URLSearchParams({
+      categoryId: categoryId,
+      title: title,
+      sort: sort,
+      period: period,
+      page: page,
+      limit: limit,
+      }) ).then((res) => res.json()),
+    addComment: (articleId, comment) => fetch("http://localhost:3000/articles/" + articleId + '/comment', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(comment),
+        }).then((res) => res.headers.get('Location')),
+    fetchRootComments: (articleId, page, limit) => fetch("http://localhost:3000/articles/" + articleId + "/comments?" + new URLSearchParams({
+      root: true,
+      page: page,
+      limit: limit,
+    }) ).then((res) => res.json()),
 };
 
 function* fetchMetricsSaga(action) {
@@ -437,6 +507,100 @@ function* addSetMarkSaga(action) {
     yield put(addSetMarkFailure(error.message));
   }
 }
+function* fetchCategoriesSaga(action) {
+  try {
+    const categories = yield call(api.fetchCategories, action.payload.title, action.payload.page, action.payload.limit);
+    console.log(categories);
+    yield put(fetchCategoriesSuccess(categories));
+  } catch (error) {
+    yield put(fetchCategoriesFailure(error.message));
+  }
+}
+
+function* addArticleSaga(action) {
+  try {
+    const article = yield call(api.addArticle, action.payload.article, action.payload.category);
+    console.log("add article saga " + article);
+    yield put(addArticleSuccess(article));
+  } catch (error) {
+    yield put(addArticleFailure(error.message));
+  }
+}
+function* fetchArticleSaga(action) {
+  try {
+    const article = yield call(api.fetchArticle, action.payload.articleId);
+    console.log("fetch article saga " + article);
+    console.log(article);
+    yield put(fetchArticleSuccess(article));
+  } catch (error) {
+    yield put(fetchArticleFailure(error.message));
+  }
+}
+function* fetchFragmentsSaga(action) {
+  try {
+    const fragments = yield call(api.fetchFragments, action.payload.articleId, action.payload.page, action.payload.limit);
+    console.log("fetch fragments saga " + fragments);
+    yield put(fetchFragmentsSuccess(fragments));
+  } catch (error) {
+    yield put(fetchFragmentsFailure(error.message));
+  }
+}
+function* fetchArticlesByTitleSaga(action) {
+  try {
+    const articles = yield call(api.fetchArticlesByTitle, action.payload.title, action.payload.page, action.payload.limit);
+    console.log("fetch articles saga " + articles);
+    console.log(articles.content);
+    yield put(fetchArticlesByTitleSuccess(articles));
+  } catch (error) {
+    yield put(fetchArticlesByTitleFailure(error.message));
+  }
+}
+
+function* addMarkSaga(action) {
+  try {
+    console.log(action.payload.mark);
+    const addedMark = yield call(api.addMark, action.payload.articleId, action.payload.mark);
+    console.log("add mark saga " + addedMark);
+    console.log(addedMark);
+    yield put(addMarkSuccess(addedMark));
+  } catch (error) {
+    yield put(addMarkFailure(error.message));
+  }
+}
+
+function* fetchFilteredArticlesSaga(action) {
+  try {
+    const articles = yield call(api.fetchFilteredArticles, action.payload.categoryId, action.payload.title, action.payload.sort, action.payload.period, action.payload.page, action.payload.limit);
+    console.log("fetch articles saga " + articles);
+    console.log(articles.content);
+    yield put(fetchFilteredArticlesSuccess(articles));
+  } catch (error) {
+    yield put(fetchFilteredArticlesFailure(error.message));
+  }
+}
+
+function* addCommentSaga(action) {
+  try {
+    console.log(action.payload.comment);
+    const addedComment = yield call(api.addComment, action.payload.articleId, action.payload.comment);
+    console.log("add comment saga " + addedComment);
+    console.log(addedComment);
+    yield put(addCommentSuccess(addedComment));
+  } catch (error) {
+    yield put(addCommentFailure(error.message));
+  }
+}
+
+function* fetchRootCommentsSaga(action) {
+  try {
+    const rootComments = yield call(api.fetchRootComments, action.payload.articleId, action.payload.page, action.payload.limit);
+    console.log("fetch root comments saga " + rootComments);
+    console.log(rootComments);
+    yield put(fetchRootCommentsSuccess(rootComments));
+  } catch (error) {
+    yield put(fetchRootCommentsFailure(error.message));
+  }
+}
 
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
@@ -463,7 +627,16 @@ function* watchShopActions() {
     takeEvery(fetchPlannedTrainsRequest.type, fetchPlannedTrainsSaga),
     takeEvery(fetchSportStatisticRequest.type, fetchSportStatisticSaga),
     takeEvery(fetchSportStatisticByDateRequest.type, fetchSportStatisticByDateSaga),
-    takeEvery(addSetMarkRequest.type, addSetMarkSaga)
+    takeEvery(addSetMarkRequest.type, addSetMarkSaga),
+    takeEvery(fetchCategoriesRequest.type, fetchCategoriesSaga),
+    takeEvery(addArticleRequest.type, addArticleSaga),
+    takeEvery(fetchArticleRequest.type, fetchArticleSaga),
+    takeEvery(fetchFragmentsRequest.type, fetchFragmentsSaga),
+    takeEvery(fetchArticlesByTitleRequest.type, fetchArticlesByTitleSaga),
+    takeEvery(addMarkRequest.type, addMarkSaga),
+    takeEvery(fetchFilteredArticlesRequest.type, fetchFilteredArticlesSaga),
+    takeEvery(addCommentRequest.type, addCommentSaga),
+    takeEvery(fetchRootCommentsRequest.type, fetchRootCommentsSaga),
   ]);
 }
 

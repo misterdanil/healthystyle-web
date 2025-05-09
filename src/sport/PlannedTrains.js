@@ -25,40 +25,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import { addSetMarkRequest, fetchPlannedTrainsRequest } from "../healthSlice";
 
-// const trains = [
-//   {
-//     id: 1,
-//     day: "Monday",
-//     time: "07:00",
-//     workoutName: "Upper Body",
-//     sessionName: "Morning Routine",
-//     sets: [
-//       { exerciseName: "Push-up", sets: 3, reps: 15 },
-//       { exerciseName: "Pull-up", sets: 2, reps: 10 },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     day: "Wednesday",
-//     time: "08:00",
-//     workoutName: "Lower Body",
-//     sessionName: "Morning Routine",
-//     sets: [
-//       { exerciseName: "Squat", sets: 4, reps: 20 },
-//     ],
-//   },
-//   {
-//     id: 3,
-//     day: "Friday",
-//     time: "18:30",
-//     workoutName: "HIIT",
-//     sessionName: "Evening Cardio",
-//     sets: [
-//       { exerciseName: "Jumping Jacks", sets: 3, reps: 30 },
-//     ],
-//   },
-// ];
-
 const days = [
     "Понедельник",
     "Вторник",

@@ -25,6 +25,12 @@ import AllSports from './sport/AllSports.js';
 import PlannedTrains from './sport/PlannedTrains.js';
 import SportsStatistic from './sport/SportStatistic.js';
 
+import CreateArticle from './article/AddArticle.js';
+import ArticleView from './article/ArticleView.js';
+import Articles from './article/Articles.js';
+
+import Auth from './Auth.js';
+
 const pages = [
   { label: "Metrics", path: "/add-metric" },
   { label: "About", path: "/about" },
@@ -92,6 +98,10 @@ function App() {
         <Route path="/sports" element={<AllSports />} />
         <Route path="/planned-trains" element={<PlannedTrains />} />
         <Route path="/sport-statistic" element={<SportsStatistic />} />
+        <Route path="/article" element={<CreateArticle />} />
+        <Route path="/articles/:articleId" element={<ArticleView />} />
+        <Route path="/articles" element={<Articles />} />
+        <Route path="/auth" element={<Auth />} />
       </Routes>
       </Router>
     </div>

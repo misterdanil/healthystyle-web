@@ -19,7 +19,15 @@ const initialState = {
   sports: [],
   trains: [],
   sportStatistic: [],
-  addedSetMark: null
+  addedSetMark: null,
+  categories: [],
+  addedArticle: null,
+  article: null,
+  fragments: [],
+  articles: [],
+  addedRating: null,
+  addedComment: null,
+  rootComments: []
 };
 
 const healthSlice = createSlice({
@@ -326,6 +334,105 @@ const healthSlice = createSlice({
     state.loading = false;
     state.error = action.payload;
   },
+  fetchCategoriesRequest(state, action) {
+    state.loading = true;
+  },
+  fetchCategoriesSuccess(state, action) {
+    state.loading = false;
+    state.categories = action.payload.content;
+  },
+  fetchCategoriesFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addArticleRequest(state, action) {
+    state.loading = true;
+  },
+  addArticleSuccess(state, action) {
+    state.loading = false;
+    state.addedArticle = action.payload;
+  },
+  addArticleFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchArticleRequest(state, action) {
+    state.loading = true;
+  },
+  fetchArticleSuccess(state, action) {
+    state.loading = false;
+    state.article = action.payload;
+  },
+  fetchArticleFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchFragmentsRequest(state, action) {
+    state.loading = true;
+  },
+  fetchFragmentsSuccess(state, action) {
+    state.loading = false;
+    state.fragments = action.payload.content;
+  },
+  fetchFragmentsFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchArticlesByTitleRequest(state, action) {
+    state.loading = true;
+  },
+  fetchArticlesByTitleSuccess(state, action) {
+    state.loading = false;
+    state.articles = action.payload.content;
+  },
+  fetchArticlesByTitleFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addMarkRequest(state, action) {
+    state.loading = true;
+  },
+  addMarkSuccess(state, action) {
+    state.loading = false;
+    state.addedMark = action.payload;
+  },
+  addMarkFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchFilteredArticlesRequest(state, action) {
+    state.loading = true;
+  },
+  fetchFilteredArticlesSuccess(state, action) {
+    state.loading = false;
+    state.articles = action.payload.content;
+  },
+  fetchFilteredArticlesFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addCommentRequest(state, action) {
+    state.loading = true;
+  },
+  addCommentSuccess(state, action) {
+    state.loading = false;
+    state.addedComment = action.payload;
+  },
+  addCommentFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchRootCommentsRequest(state, action) {
+    state.loading = true;
+  },
+  fetchRootCommentsSuccess(state, action) {
+    state.loading = false;
+    state.rootComments = action.payload.content;
+  },
+  fetchRootCommentsFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  }
   },
 });
 
@@ -400,6 +507,33 @@ export const {
   addSetMarkRequest,
   addSetMarkSuccess,
   addSetMarkFailure,
+  fetchCategoriesRequest,
+  fetchCategoriesSuccess,
+  fetchCategoriesFailure,
+  addArticleRequest,
+  addArticleSuccess,
+  addArticleFailure,
+  fetchArticleRequest,
+  fetchArticleSuccess,
+  fetchArticleFailure,
+  fetchFragmentsRequest,
+  fetchFragmentsSuccess,
+  fetchFragmentsFailure,
+  fetchArticlesByTitleRequest,
+  fetchArticlesByTitleSuccess,
+  fetchArticlesByTitleFailure,
+  addMarkRequest,
+  addMarkSuccess,
+  addMarkFailure,
+  fetchFilteredArticlesRequest,
+  fetchFilteredArticlesSuccess,
+  fetchFilteredArticlesFailure,
+  addCommentRequest,
+  addCommentSuccess,
+  addCommentFailure,
+  fetchRootCommentsRequest,
+  fetchRootCommentsSuccess,
+  fetchRootCommentsFailure
 } = healthSlice.actions;
 
 export default healthSlice.reducer;

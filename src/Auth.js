@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Container,
   TextField,
@@ -8,31 +9,61 @@ import {
   Stack,
 } from "@mui/material";
 
-const Auth = () => {
-  const [mode, setMode] = useState<"login" | "register" | "verify">("register");
-  const [form, setForm] = useState({
+import { addUserRequest, loginRequest } from "./healthSlice";
+
+const AuthPage = (redirectUri) => {
+  const dispatch = useDispatch();
+
+  const addedUser = useSelector((state) => state.health.addedUser);
+  const loggedUser = useSelector((state) => state.health.loggedUser);
+
+  const [mode, setMode] = useState("login");
+  const [user, setUser] = useState({
     username: "",
     email: "",
     password: "",
-    code: "",
   });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setUser({ ...user, [e.target.name]: e.target.value });
   };
 
   const handleRegister = () => {
-    console.log("Registering:", form);
-    setMode("verify");
+    dispatch(addUserRequest(user));
+    setMode('verify');
   };
 
   const handleLogin = () => {
-    console.log("Logging in:", form);
+    dispatch(loginRequest(user));
   };
 
   const handleVerify = () => {
-    console.log("Verifying code:", form.code);
+    console.log("Verifying code:", user.code);
   };
+
+  const recognizeAction = () => {
+    if(mode == 'login') {
+      return '/login';
+    }
+    if(mode == 'signup') {
+      return '/login';
+    }
+  };
+
+  useEffect(() => {
+    if(addedUser != null) {
+      console.log('added ' + addedUser);
+      dispatch(loginRequest(user));
+    }
+    }, [addedUser]);
+
+  useEffect(() => {
+    if(loggedUser != null) {
+      let res = fetch(loggedUser, {
+        credentials: "include",
+      }).then()
+    }
+    }, [loggedUser]);
 
   return (
     <Container maxWidth="xs" sx={{ mt: 8 }}>
@@ -45,7 +76,12 @@ const Auth = () => {
             : "Подтверждение Email"}
         </Typography>
       </Box>
-
+      
+      <Box component="form" action={mode === "register"
+            ? "/signup"
+            : mode === "login"
+            ? "/login"
+            : "Подтверждение Email"}>
       <Stack spacing={2}>
         {mode === "register" && (
           <>
@@ -53,14 +89,14 @@ const Auth = () => {
               label="Имя пользователя"
               name="username"
               fullWidth
-              value={form.username}
+              value={user.username}
               onChange={handleChange}
             />
             <TextField
               label="Email"
               name="email"
               fullWidth
-              value={form.email}
+              value={user.email}
               onChange={handleChange}
             />
             <TextField
@@ -68,10 +104,10 @@ const Auth = () => {
               name="password"
               type="password"
               fullWidth
-              value={form.password}
+              value={user.password}
               onChange={handleChange}
             />
-            <Button variant="contained" onClick={handleRegister}>
+            <Button variant="contained" type="submit">
               Зарегистрироваться
             </Button>
             <Button onClick={() => setMode("login")}>Уже есть аккаунт?</Button>
@@ -82,9 +118,9 @@ const Auth = () => {
           <>
             <TextField
               label="Email"
-              name="email"
+              name="username"
               fullWidth
-              value={form.email}
+              value={user.username}
               onChange={handleChange}
             />
             <TextField
@@ -92,7 +128,7 @@ const Auth = () => {
               name="password"
               type="password"
               fullWidth
-              value={form.password}
+              value={user.password}
               onChange={handleChange}
             />
             <Button variant="contained" onClick={handleLogin}>
@@ -113,7 +149,7 @@ const Auth = () => {
               label="Код подтверждения"
               name="code"
               fullWidth
-              value={form.code}
+              value={user.code}
               onChange={handleChange}
             />
             <Button variant="contained" onClick={handleVerify}>
@@ -122,8 +158,9 @@ const Auth = () => {
           </>
         )}
       </Stack>
+      </Box>
     </Container>
   );
 };
 
-export default Auth;
+export default AuthPage;

@@ -31,6 +31,19 @@ import Articles from './article/Articles.js';
 
 import Auth from './Auth.js';
 
+import AddEvent from './event/AddEvent.js';
+import EventSearch from './event/EventSearch.js';
+import EventView from './event/EventView.js';
+
+import AddMedicine from './medicine/AddMedicine.js';
+import AddTreatment from './medicine/AddTreatment.js';
+import PlannedIntakes from './medicine/PlannedIntakes.js';
+import MissedIntakes from './medicine/MissedIntakes.js';
+
+import store from './store';
+import { Provider } from 'react-redux';
+
+
 const pages = [
   { label: "Metrics", path: "/add-metric" },
   { label: "About", path: "/about" },
@@ -71,6 +84,8 @@ const NavigationTabs = () => {
 function App() {
   const [foodList, setFoodList] = useState([]);
 
+  const ReactDOMServer = require('react-dom/server');
+
   return (
     <div className="">
       <Router>
@@ -102,6 +117,13 @@ function App() {
         <Route path="/articles/:articleId" element={<ArticleView />} />
         <Route path="/articles" element={<Articles />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/event" element={<AddEvent />}></Route>
+        <Route path="/events" element={<EventSearch />}></Route>
+        <Route path="/events/:id" element={<EventView />}></Route>
+        <Route path="/medicine" element={<AddMedicine />}></Route>
+        <Route path="/treatment" element={<AddTreatment />}></Route>
+        <Route path="/intakes" element={<PlannedIntakes />}></Route>
+        <Route path="/missed" element={<MissedIntakes />}></Route>
       </Routes>
       </Router>
     </div>

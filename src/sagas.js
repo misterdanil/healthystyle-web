@@ -95,8 +95,70 @@ import {
     addCommentFailure,
     fetchRootCommentsRequest,
     fetchRootCommentsSuccess,
-    fetchRootCommentsFailure
+    fetchRootCommentsFailure,
+    addEventRequest,
+    addEventSuccess,
+    addEventFailure,
+    addUserRequest,
+    addUserSuccess,
+    addUserFailure,
+    loginRequest,
+    loginSuccess,
+    loginFailure,
+    verifyRequest,
+    verifySuccess,
+    verifyFailure,
+    fetchUsersRequest,
+    fetchUsersSuccess,
+    fetchUsersFailure,
+    fetchUserIdRequest,
+    fetchUserIdSuccess,
+    fetchUserIdFailure,
+    fetchEventsRequest,
+    fetchEventsSuccess,
+    fetchEventsFailure,
+    fetchEventRequest,
+    fetchEventSuccess,
+    fetchEventFailure,
+    fetchEventMembersRequest,
+    fetchEventMembersSuccess,
+    fetchEventMembersFailure,
+    joinEventRequest,
+    joinEventSuccess,
+    joinEventFailure,
+    fetchMeasuresRequest,
+    fetchMeasuresSuccess,
+    fetchMeasuresFailure,
+    addMedicineRequest,
+    addMedicineSuccess,
+    addMedicineFailure,
+    fetchMedicinesRequest,
+    fetchMedicinesSuccess,
+    fetchMedicinesFailure,
+    deleteMedicineRequest,
+    deleteMedicineSuccess,
+    deleteMedicineFailure,
+    fetchMedicineRequest,
+    fetchMedicineSuccess,
+    fetchMedicineFailure,
+    addTreatmentRequest,
+    addTreatmentSuccess,
+    addTreatmentFailure,
+    fetchIntakesRequest,
+    fetchIntakesSuccess,
+    fetchIntakesFailure,
+    fetchNextIntakesRequest,
+    fetchNextIntakesSuccess,
+    fetchNextIntakesFailure,
+    addIntakeResultRequest,
+    addIntakeResultSuccess,
+    addIntakeResultFailure,
+    fetchMissedIntakesRequest,
+    fetchMissedIntakesSuccess,
+    fetchMissedIntakesFailure
 } from "./healthSlice";
+
+import Cookies from 'js-cookie';
 
 const api = {
   fetchMetrics: (page, limit, sort) => fetch("http://localhost:3000/metrics?" + new URLSearchParams({
@@ -200,30 +262,30 @@ const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sport),
       }).then((res) => res.headers.get('Location')),
-  fetchSports: (description, page, limit) => fetch("http://localhost:3000/sports?" + new URLSearchParams({
+  fetchSports: (description, page, limit) => fetch("http://localhost:3001/sports?" + new URLSearchParams({
       description: description,
       page: page,
       limit: limit
     }) ).then((res) => res.json()),
-  fetchPlannedTrains: (page, limit) => fetch("http://localhost:3000/trains?" + new URLSearchParams({
+  fetchPlannedTrains: (page, limit) => fetch("http://localhost:3001/trains?" + new URLSearchParams({
       planned: true,
       page: page,
       limit: limit
     }) ).then((res) => res.json()),
-  fetchSportStatistic: (start, end, page, limit, range) => fetch("http://localhost:3000/sports/statistic?" + new URLSearchParams({
+  fetchSportStatistic: (start, end, page, limit, range) => fetch("http://localhost:3001/sports/statistic?" + new URLSearchParams({
       start: start,
       end: end,
       page: page,
       limit: limit,
       range: range
     }) ).then((res) => res.json()),
-    fetchSportStatisticByDate: (date, page, limit) => fetch("http://localhost:3000/sports/statistic?" + new URLSearchParams({
+    fetchSportStatisticByDate: (date, page, limit) => fetch("http://localhost:3001/sports/statistic?" + new URLSearchParams({
       date: date,
       page: page,
       limit: limit,
     }) ).then((res) => res.json()),
     addSetMark: (result, setId) => 
-      fetch("http://localhost:3000/sets/" + setId + "/result" , {
+      fetch("http://localhost:3001/sets/" + setId + "/result" , {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result),
@@ -271,7 +333,123 @@ const api = {
       page: page,
       limit: limit,
     }) ).then((res) => res.json()),
-};
+    addEvent: (event) => fetch("http://localhost:3002/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + Cookies.get('access_token') },
+      body: JSON.stringify(event),
+      }).then((res) => res.headers.get('Location')),
+    addUser: (user) => fetch("http://localhost:3003/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+      }).then((res) => res.headers.get('Location')),
+    login: (user) => fetch("http://localhost:3003/login", {
+      credentials: "include",
+      method: "POST",
+      body: new URLSearchParams({
+        'username': user.username,
+        'password': user.password
+      })}).then((res) => res.text()),
+    verify: (token) => fetch("http://localhost:3003/login", {
+      method: "POST",
+      body: token
+      }).then((res) => res),
+    fetchUsers: (username, page, limit) => fetch("http://localhost:3003/users?" + new URLSearchParams({
+      username: username,
+      page: page,
+      limit: limit
+    }),{
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+    }).then((res) => res.json()),
+  fetchUserId: () => fetch("http://localhost:3003/id",{
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+    }).then((res) => res.json()),
+  fetchEvents: (title, latitude, longitude, page, limit) => fetch("http://localhost:3002/events?" + new URLSearchParams({
+      title: title,
+      latitude: latitude,
+      longitude: longitude,
+      page: page,
+      limit: limit
+    }),{
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+    }).then((res) => res.json()),
+  fetchEvent: (id) => fetch("http://localhost:3002/events/" + id, {
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+    }).then((res) => res.json()),
+  fetchEventMembers: (id) => fetch("http://localhost:3002/events/" + id + '/members?' + new URLSearchParams({
+    page: 0,
+    limit: 25
+  }), {
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+    }).then((res) => res.json()),
+  joinEvent: (id) => fetch("http://localhost:3002/events/" + id + '/member', {
+        method: "POST",
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+      }).then((res) => res.json()),
+  fetchMeasures: () => fetch("http://localhost:3001/measures", {
+        method: "GET",
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+      }).then((res) => res.json()),
+  addMedicine: (medicine) => fetch("http://localhost:3001/medicine", {
+        method: "POST",
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token'), "Content-Type": "application/json"},
+        body: JSON.stringify(medicine)  
+      }).then((res) => res),
+  fetchMedicines: (name, page, limit) => fetch("http://localhost:3001/medicines?" + new URLSearchParams({
+    name: name,
+    page: page,
+    limit: limit
+  }), {
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+    }).then((res) => res.json()),
+   deleteMedicine: (id) => fetch("http://localhost:3001/medicines/" + id, {
+      method: "DELETE",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+    }).then((res) => res),
+  fetchMedicine: (id) => fetch("http://localhost:3001/medicines/" + id, {
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+    }).then((res) => res.json()),
+  addTreatment: (body) => fetch("http://localhost:3001/treatment", {
+      method: "POST",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token'), "Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    }).then((res) => res.json()),
+  fetchIntakes: (page, limit) => fetch("http://localhost:3001/intakes?" + new URLSearchParams({
+    planned: true,
+    page: page,
+    limit: limit
+  }), {
+      method: "GET",
+      headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+    }).then((res) => res.json()),
+  fetchNextIntakes: (page, limit) => fetch("http://localhost:3001/intakes?" + new URLSearchParams({
+    next: true,
+    page: page,
+    limit: limit
+    }), {
+        method: "GET",
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+      }).then((res) => res.json()),
+  addIntakeResult: (intakeId, body) => fetch("http://localhost:3001/intakes/" + intakeId + "/result", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token'), "Content-Type": "application/json"},
+      }).then((res) => res),
+  fetchMissedIntakes: (page, limit) => fetch("http://localhost:3001/intakes?" + new URLSearchParams({
+    missed: true,
+    page: page,
+    limit: limit
+  }), {
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+      }).then((res) => res)
+  };
 
 function* fetchMetricsSaga(action) {
   try {
@@ -602,6 +780,212 @@ function* fetchRootCommentsSaga(action) {
   }
 }
 
+function* addEventSaga(action) {
+  try {
+    console.log(action.payload.event);
+    const addedEvent = yield call(api.addEvent, action.payload);
+    console.log("add event saga " + addedEvent);
+    console.log(addedEvent);
+    yield put(addEventSuccess(addedEvent));
+  } catch (error) {
+    yield put(addEventFailure(error.message));
+  }
+}
+
+function* addUserSaga(action) {
+  try {
+    console.log(action.payload);
+    const addedUser = yield call(api.addUser, action.payload);
+    console.log("add user saga " + addedUser);
+    console.log(addedUser);
+    yield put(addUserSuccess(addedUser));
+  } catch (error) {
+    yield put(addUserFailure(error.message));
+  }
+}
+
+function* loginSaga(action) {
+  try {
+    console.log(action.payload);
+    const loggedUser = yield call(api.login, action.payload);
+    console.log("logged user saga " + loggedUser);
+    console.log(loggedUser);
+    yield put(loginSuccess(loggedUser));
+  } catch (error) {
+    yield put(loginFailure(error.message));
+  }
+}
+
+function* verifySaga(action) {
+  try {
+    yield call(api.verify, action.payload);
+    yield put(verifySuccess());
+  } catch (error) {
+    yield put(verifyFailure(error.message));
+  }
+}
+
+function* fetchUsersSaga(action) {
+  try {
+    const users = yield call(api.fetchUsers, action.payload.username, action.payload.page, action.payload.limit);
+    yield put(fetchUsersSuccess(users));
+  } catch (error) {
+    yield put(fetchUsersFailure(error.message));
+  }
+}
+
+function* fetchUserIdSaga(action) {
+  try {
+    const userId = yield call(api.fetchUserId);
+    yield put(fetchUserIdSuccess(userId));
+  } catch (error) {
+    yield put(fetchUserIdFailure(error.message));
+  }
+}
+
+function* fetchEventsSaga(action) {
+  try {
+    const events = yield call(api.fetchEvents, action.payload.title, action.payload.latitude, action.payload.longitude, action.payload.page, action.payload.limit);
+    yield put(fetchEventsSuccess(events));
+  } catch (error) {
+    yield put(fetchEventsFailure(error.message));
+  }
+}
+
+function* fetchEventSaga(action) {
+  try {
+    const event = yield call(api.fetchEvent, action.payload.id);
+    yield put(fetchEventSuccess(event));
+  } catch (error) {
+    yield put(fetchEventFailure(error.message));
+  }
+}
+
+function* fetchEventMembersSaga(action) {
+  try {
+    const members = yield call(api.fetchEventMembers, action.payload.id, action.payload.page, action.payload.limit);
+    yield put(fetchEventMembersSuccess(members));
+  } catch (error) {
+    yield put(fetchEventMembersFailure(error.message));
+  }
+}
+
+function* joinEventSaga(action) {
+  try {
+    const joinedEvent = yield call(api.joinEvent, action.payload.eventId);
+    yield put(joinEventSuccess(joinedEvent));
+  } catch (error) {
+    yield put(joinEventFailure(error.message));
+  }
+}
+
+function* fetchMeasuresSaga(action) {
+  try {
+    const measures = yield call(api.fetchMeasures);
+    yield put(fetchMeasuresSuccess(measures));
+  } catch (error) {
+    yield put(fetchMeasuresFailure(error.message));
+  }
+}
+
+function* addMedicineSaga(action) {
+  try {
+    const res = yield call(api.addMedicine, action.payload);
+    console.log(res);
+    console.log(res.headers);
+    if(res.status != 201) {
+      yield put(addMedicineFailure(res.json()));
+    }
+    else {
+      const location = res.headers.get('Location');
+      console.log(location);
+      yield put(addMedicineSuccess(location));
+    }
+  } catch (error) {
+    yield put(addMedicineFailure(error.message));
+  }
+}
+
+function* fetchMedicinesSaga(action) {
+  try {
+    const medicines = yield call(api.fetchMedicines, action.payload.name, action.payload.page, action.payload.limit);
+    yield put(fetchMedicinesSuccess(medicines));
+  } catch (error) {
+    yield put(fetchMedicinesFailure(error.message));
+  }
+}
+
+function* deleteMedicineSaga(action) {
+  try {
+    const id = action.payload.id;
+    const res = yield call(api.deleteMedicine, id);
+    if(res.status == 204) {
+      yield put(deleteMedicineSuccess(id));
+    }
+  } catch (error) {
+    yield put(deleteMedicineFailure(error.message));
+  }
+}
+
+function* fetchMedicineSaga(action) {
+  try {
+    const medicine = yield call(api.fetchMedicine, action.payload.name, action.payload.page, action.payload.limit);
+    yield put(fetchMedicineSuccess(medicine));
+  } catch (error) {
+    yield put(fetchMedicineFailure(error.message));
+  }
+}
+
+function* addTreatmentSaga(action) {
+  try {
+    const treatment = yield call(api.addTreatment, action.payload);
+    yield put(addTreatmentSuccess(treatment));
+  } catch (error) {
+    yield put(addTreatmentFailure(error.message));
+  }
+}
+
+function* fetchIntakesSaga(action) {
+  try {
+    const intakes = yield call(api.fetchIntakes, action.payload.page, action.payload.limit);
+    yield put(fetchIntakesSuccess(intakes));
+  } catch (error) {
+    yield put(fetchIntakesFailure(error.message));
+  }
+}
+
+function* fetchNextIntakesSaga(action) {
+  try {
+    const intakes = yield call(api.fetchNextIntakes, action.payload.page, action.payload.limit);
+    yield put(fetchNextIntakesSuccess(intakes));
+  } catch (error) {
+    yield put(fetchNextIntakesFailure(error.message));
+  }
+}
+
+function* addIntakeResultSaga(action) {
+  try {
+    const id = action.payload.id;
+    const res = yield call(api.addIntakeResult, id, action.payload.result);
+    if(res.status == 201) {
+      console.log('look');
+      console.log(id);
+      yield put(addIntakeResultSuccess(id));
+    }
+  } catch (error) {
+    yield put(addIntakeResultFailure(error.message));
+  }
+}
+
+function* fetchMissedIntakesSaga(action) {
+  try {
+    const missedIntakes = yield call(api.fetchMissedIntakes, action.payload.page, action.payload.limit);
+    yield put(fetchMissedIntakesSuccess(missedIntakes));
+  } catch (error) {
+    yield put(fetchMissedIntakesFailure(error.message));
+  }
+}
+
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
   yield all([
@@ -637,6 +1021,26 @@ function* watchShopActions() {
     takeEvery(fetchFilteredArticlesRequest.type, fetchFilteredArticlesSaga),
     takeEvery(addCommentRequest.type, addCommentSaga),
     takeEvery(fetchRootCommentsRequest.type, fetchRootCommentsSaga),
+    takeEvery(addEventRequest.type, addEventSaga),
+    takeEvery(addUserRequest.type, addUserSaga),
+    takeEvery(loginRequest.type, loginSaga),
+    takeEvery(verifyRequest.type, verifySaga),
+    takeEvery(fetchUsersRequest.type, fetchUsersSaga),
+    takeEvery(fetchUserIdRequest.type, fetchUserIdSaga),
+    takeEvery(fetchEventsRequest.type, fetchEventsSaga),
+    takeEvery(fetchEventRequest.type, fetchEventSaga),
+    takeEvery(fetchEventMembersRequest.type, fetchEventMembersSaga),
+    takeEvery(joinEventRequest.type, joinEventSaga),
+    takeEvery(fetchMeasuresRequest.type, fetchMeasuresSaga),
+    takeEvery(addMedicineRequest.type, addMedicineSaga),
+    takeEvery(fetchMedicinesRequest.type, fetchMedicinesSaga),
+    takeEvery(deleteMedicineRequest.type, deleteMedicineSaga),
+    takeEvery(fetchMedicineRequest.type, fetchMedicineSaga),
+    takeEvery(addTreatmentRequest.type, addTreatmentSaga),
+    takeEvery(fetchIntakesRequest.type, fetchIntakesSaga),
+    takeEvery(fetchNextIntakesRequest.type, fetchNextIntakesSaga),
+    takeEvery(addIntakeResultRequest.type, addIntakeResultSaga),
+    takeEvery(fetchMissedIntakesRequest.type, fetchMissedIntakesSaga)
   ]);
 }
 

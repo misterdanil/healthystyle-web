@@ -27,7 +27,27 @@ const initialState = {
   articles: [],
   addedRating: null,
   addedComment: null,
-  rootComments: []
+  rootComments: [],
+  addedEvent: null,
+  addedUser: null,
+  loggedUser: null,
+  verifiedStatus: null,
+  users: [],
+  userId: null,
+  events: [],
+  event: null,
+  members: [],
+  joinedEvent: null,
+  addedMedicine: null,
+  measures: [],
+  medicines: [],
+  medicine: null,
+  deletedMedicine: null,
+  addedTreatment: null,
+  intakes: [],
+  nextIntakes: [],
+  addedIntakeResult: null,
+  missedIntakes: []
 };
 
 const healthSlice = createSlice({
@@ -432,6 +452,230 @@ const healthSlice = createSlice({
   fetchRootCommentsFailure(state, action) {
     state.loading = false;
     state.error = action.payload;
+  },
+  addEventRequest(state, action) {
+    state.loading = true;
+  },
+  addEventSuccess(state, action) {
+    state.loading = false;
+    state.addedEvent = action.payload;
+  },
+  addEventFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addUserRequest(state, action) {
+    state.loading = true;
+  },
+  addUserSuccess(state, action) {
+    state.loading = false;
+    state.addedUser = action.payload;
+  },
+  addUserFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  loginRequest(state, action) {
+    state.loading = true;
+  },
+  loginSuccess(state, action) {
+    state.loading = false;
+    state.loggedUser = action.payload;
+  },
+  loginFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  verifyRequest(state, action) {
+    state.loading = true;
+  },
+  verifySuccess(state, action) {
+    state.loading = false;
+    state.verifiedStatus = true;
+  },
+  verifyFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+    state.verifiedStatus = false;
+  },
+  fetchUsersRequest(state, action) {
+    state.loading = true;
+  },
+  fetchUsersSuccess(state, action) {
+    state.loading = false;
+    state.users = action.payload.content;
+  },
+  fetchUsersFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchUserIdRequest(state, action) {
+    state.loading = true;
+  },
+  fetchUserIdSuccess(state, action) {
+    state.loading = false;
+    state.userId = action.payload;
+  },
+  fetchUserIdFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchEventsRequest(state, action) {
+    state.loading = true;
+  },
+  fetchEventsSuccess(state, action) {
+    state.loading = false;
+    state.events = action.payload;
+  },
+  fetchEventsFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchEventRequest(state, action) {
+    state.loading = true;
+  },
+  fetchEventSuccess(state, action) {
+    state.loading = false;
+    state.event = action.payload;
+  },
+  fetchEventFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchEventMembersRequest(state, action) {
+    state.loading = true;
+  },
+  fetchEventMembersSuccess(state, action) {
+    state.loading = false;
+    state.members = action.payload.content;
+  },
+  fetchEventMembersFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  joinEventRequest(state, action) {
+    state.loading = true;
+  },
+  joinEventSuccess(state, action) {
+    state.loading = false;
+    state.joinedEvent = action.payload;
+  },
+  joinEventFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addMedicineRequest(state, action) {
+    state.loading = true;
+  },
+  addMedicineSuccess(state, action) {
+    state.loading = false;
+    state.addedMedicine = action.payload;
+    console.log(state.addedMedicine);
+  },
+  addMedicineFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchMeasuresRequest(state, action) {
+    state.loading = true;
+  },
+  fetchMeasuresSuccess(state, action) {
+    state.loading = false;
+    state.measures = action.payload;
+  },
+  fetchMeasuresFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchMedicinesRequest(state, action) {
+    state.loading = true;
+  },
+  fetchMedicinesSuccess(state, action) {
+    state.loading = false;
+    state.medicines = action.payload.content;
+  },
+  fetchMedicinesFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  deleteMedicineRequest(state, action) {
+    state.loading = true;
+  },
+  deleteMedicineSuccess(state, action) {
+    state.loading = false;
+    state.deletedMedicine = action.payload;
+    console.log(state.deletedMedicine);
+  },
+  deleteMedicineFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchMedicineRequest(state, action) {
+    state.loading = true;
+  },
+  fetchMedicineSuccess(state, action) {
+    state.loading = false;
+    state.medicine = action.payload;
+  },
+  fetchMedicineFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addTreatmentRequest(state, action) {
+    state.loading = true;
+  },
+  addTreatmentSuccess(state, action) {
+    state.loading = false;
+    state.addedTreatment = action.payload;
+    console.log(state.addedTreatment);
+  },
+  addTreatmentFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchIntakesRequest(state, action) {
+    state.loading = true;
+  },
+  fetchIntakesSuccess(state, action) {
+    state.loading = false;
+    state.intakes = action.payload;
+  },
+  fetchIntakesFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchNextIntakesRequest(state, action) {
+    state.loading = true;
+  },
+  fetchNextIntakesSuccess(state, action) {
+    state.loading = false;
+    state.nextIntakes = action.payload;
+  },
+  fetchNextIntakesFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  addIntakeResultRequest(state, action) {
+    state.loading = true;
+  },
+  addIntakeResultSuccess(state, action) {
+    state.loading = false;
+    state.addedIntakeResult = action.payload;
+  },
+  addIntakeResultFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchMissedIntakesRequest(state, action) {
+    state.loading = true;
+  },
+  fetchMissedIntakesSuccess(state, action) {
+    state.loading = false;
+    state.missedIntakes = action.payload;
+  },
+  fetchMissedIntakesFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
   }
   },
 });
@@ -533,7 +777,67 @@ export const {
   addCommentFailure,
   fetchRootCommentsRequest,
   fetchRootCommentsSuccess,
-  fetchRootCommentsFailure
+  fetchRootCommentsFailure,
+  addEventRequest,
+  addEventSuccess,
+  addEventFailure,
+  addUserRequest,
+  addUserSuccess,
+  addUserFailure,
+  loginRequest,
+  loginSuccess,
+  loginFailure,
+  verifyRequest,
+  verifySuccess,
+  verifyFailure,
+  fetchUsersRequest,
+  fetchUsersSuccess,
+  fetchUsersFailure,
+  fetchUserIdRequest,
+  fetchUserIdSuccess,
+  fetchUserIdFailure,
+  fetchEventsRequest,
+  fetchEventsSuccess,
+  fetchEventsFailure,
+  fetchEventRequest,
+  fetchEventSuccess,
+  fetchEventFailure,
+  fetchEventMembersRequest,
+  fetchEventMembersSuccess,
+  fetchEventMembersFailure,
+  joinEventRequest,
+  joinEventSuccess,
+  joinEventFailure,
+  addMedicineRequest,
+  addMedicineSuccess,
+  addMedicineFailure,
+  fetchMeasuresRequest,
+  fetchMeasuresSuccess,
+  fetchMeasuresFailure,
+  fetchMedicinesRequest,
+  fetchMedicinesSuccess,
+  fetchMedicinesFailure,
+  deleteMedicineRequest,
+  deleteMedicineSuccess,
+  deleteMedicineFailure,
+  fetchMedicineRequest,
+  fetchMedicineSuccess,
+  fetchMedicineFailure,
+  addTreatmentRequest,
+  addTreatmentSuccess,
+  addTreatmentFailure,
+  fetchIntakesRequest,
+  fetchIntakesSuccess,
+  fetchIntakesFailure,
+  fetchNextIntakesRequest,
+  fetchNextIntakesSuccess,
+  fetchNextIntakesFailure,
+  addIntakeResultRequest,
+  addIntakeResultSuccess,
+  addIntakeResultFailure,
+  fetchMissedIntakesRequest,
+  fetchMissedIntakesSuccess,
+  fetchMissedIntakesFailure
 } = healthSlice.actions;
 
 export default healthSlice.reducer;

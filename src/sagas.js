@@ -155,51 +155,63 @@ import {
     addIntakeResultFailure,
     fetchMissedIntakesRequest,
     fetchMissedIntakesSuccess,
-    fetchMissedIntakesFailure
+    fetchMissedIntakesFailure,
+    fetchUsernameRequest,
+    fetchUsernameSuccess,
+    fetchUsernameFailure,
+    fetchNotificationsRequest,
+    fetchNotificationsSuccess,
+    fetchNotificationsFailure
 } from "./healthSlice";
 
 import Cookies from 'js-cookie';
 
 const api = {
-  fetchMetrics: (page, limit, sort) => fetch("http://localhost:3000/metrics?" + new URLSearchParams({
+  fetchMetrics: (page, limit, sort) => fetch("http://localhost:3001/metrics?" + new URLSearchParams({
     page: page,
     limit: limit,
     sort: sort
-  }) ).then((res) => res.json()),
-  fetchMetricsByName: (page, limit, name) => fetch("http://localhost:3000/metrics?" + new URLSearchParams({
+  }),         {headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+  }
+).then((res) => res.json()),
+  fetchMetricsByName: (page, limit, name) => fetch("http://localhost:3001/metrics?" + new URLSearchParams({
     page: page,
     limit: limit,
     name: name
-  }) ).then((res) => res.json()),
+  }),         {headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+} ).then((res) => res.json()),
   addMetricValue: (metricValue) => 
-    fetch("http://localhost:3000/metrics/" + metricValue.indicatorTypeId + '/value', {
+    fetch("http://localhost:3001/metrics/" + metricValue.indicatorTypeId + '/value', {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + Cookies.get('access_token') },
       body: JSON.stringify(metricValue),
     }).then((res) => res.json()),
-  fetchIndicators: (page, limit, sort, direction) => fetch("http://localhost:3000/indicators?" + new URLSearchParams({
+  fetchIndicators: (page, limit, sort, direction) => fetch("http://localhost:3001/indicators?" + new URLSearchParams({
     page: page,
     limit: limit,
     sort: sort,
     direction: direction
-  }) ).then((res) => res.json()),
-  fetchIndicatorsByMetric: (metricId, page, limit, sort, direction) => fetch("http://localhost:3000/metrics/" + metricId + "/indicators?" + new URLSearchParams({
+  }),         {headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+}  ).then((res) => res.json()),
+  fetchIndicatorsByMetric: (metricId, page, limit, sort, direction) => fetch("http://localhost:3001/metrics/" + metricId + "/indicators?" + new URLSearchParams({
     page: page,
     limit: limit,
     sort: sort,
     direction: direction
-  }) ).then((res) => res.json()),
-  fetchNutritionValues: (page, limit) => fetch("http://localhost:3000/values?" + new URLSearchParams({
+  }),         {headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+}  ).then((res) => res.json()),
+  fetchNutritionValues: (page, limit) => fetch("http://localhost:3001/values?" + new URLSearchParams({
     page: page,
     limit: limit
-  }) ).then((res) => res.json()),
-  fetchNutritionValuesByValue: (value, page, limit) => fetch("http://localhost:3000/values?" + new URLSearchParams({
+  }),         {headers: {"Authorization": "Bearer " + Cookies.get('access_token')}  
+}  ).then((res) => res.json()),
+  fetchNutritionValuesByValue: (value, page, limit) => fetch("http://localhost:3001/values?" + new URLSearchParams({
     value: value,
     page: page,
     limit: limit
   }) ).then((res) => res.json()),
   addFood: (food) => 
-    fetch("http://localhost:3000/food", {
+    fetch("http://localhost:3001/food", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(food),
@@ -448,7 +460,17 @@ const api = {
     limit: limit
   }), {
         headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
-      }).then((res) => res)
+      }).then((res) => res.json()),
+  fetchUsername: () => fetch("http://localhost:3003/username?", {
+        headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+      }).then((res) => res.json()),
+  fetchNotifications: (page, limit) => fetch("http://localhost:3004/notifications?" + new URLSearchParams({
+    status: 'UNWATCHED',
+    page: page,
+    limit: limit
+    }), {
+            headers: {"Authorization": "Bearer " + Cookies.get('access_token')},
+          }).then((res) => res.json())
   };
 
 function* fetchMetricsSaga(action) {
@@ -986,6 +1008,24 @@ function* fetchMissedIntakesSaga(action) {
   }
 }
 
+function* fetchUsernameSaga(action) {
+  try {
+    const username = yield call(api.fetchUsername);
+    yield put(fetchUsernameSuccess(username));
+  } catch (error) {
+    yield put(fetchUsernameFailure(error.message));
+  }
+}
+
+function* fetchNotificationsSaga(action) {
+  try {
+    const notifications = yield call(api.fetchNotifications, action.payload.page, action.payload.limit);
+    yield put(fetchNotificationsSuccess(notifications));
+  } catch (error) {
+    yield put(fetchNotificationsFailure(error.message));
+  }
+}
+
 function* watchShopActions() {
   console.log('test ', fetchMetricsRequest.type);
   yield all([
@@ -1040,7 +1080,9 @@ function* watchShopActions() {
     takeEvery(fetchIntakesRequest.type, fetchIntakesSaga),
     takeEvery(fetchNextIntakesRequest.type, fetchNextIntakesSaga),
     takeEvery(addIntakeResultRequest.type, addIntakeResultSaga),
-    takeEvery(fetchMissedIntakesRequest.type, fetchMissedIntakesSaga)
+    takeEvery(fetchMissedIntakesRequest.type, fetchMissedIntakesSaga),
+    takeEvery(fetchUsernameRequest.type, fetchUsernameSaga),
+    takeEvery(fetchNotificationsRequest.type, fetchNotificationsSaga)
   ]);
 }
 

@@ -29,7 +29,7 @@ const days = [
 ];
 
 const MissedIntakes = () => {
-  const missedIntakes = useSelector((state) => state.health.intakes);
+  const missedIntakes = useSelector((state) => state.health.missedIntakes);
   const addedIntakeResult = useSelector((state) => state.health.addedIntakeResult);
 
   const [waitCompletetions, setWaitCompletetions] = useState(new Set());
@@ -38,22 +38,27 @@ const MissedIntakes = () => {
 
   const [searchParams] = useSearchParams();
   
-  checkAuth('http://localhost:3001/intakes?missed', 'GET', "http://localhost:3001/oauth2/redirect", window.location.href, searchParams);
+  checkAuth('http://localhost:3001/intakes?missed', 'GET', "http://localhost:3001/oauth2/redirect", "http://localhost:3001/oauth2/refresh", window.location.href, searchParams);
 
   useEffect(() => {
     dispatch(fetchMissedIntakesRequest({page: 1, limit: 25}));
   }, [dispatch]);
 
   useEffect(() => {
+    console.log(addedIntakeResult);
+    console.log(waitCompletetions);
     waitCompletetions.delete(addedIntakeResult);
     setWaitCompletetions(waitCompletetions);
+    console.log(waitCompletetions);
     dispatch(fetchMissedIntakesRequest({page: 1, limit: 25}));
   }, [addedIntakeResult]);
 
   const handleSendCompletetion = (intake) => {
+    console.log('added ' + intake.id);
     waitCompletetions.add(intake.id, intake);
     setWaitCompletetions(new Set(waitCompletetions));
-    dispatch(addIntakeResultRequest({id: intake.id, result: {date: intake.date.getFullYear() + '-' + ('0' + (intake.date.getMonth()+1)).slice(-2) + '-' + ('0' + intake.date.getDate()).slice(-2)}}));
+    const date = new Date(intake.date);
+    dispatch(addIntakeResultRequest({id: intake.id, result: {date: date.getFullYear() + '-' + ('0' + (date.getMonth()+1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2)}}));
   }
 
   return (
@@ -63,9 +68,9 @@ const MissedIntakes = () => {
       </Typography>
 
       <Stack spacing={3}>
-        {missedIntakes && missedIntakes.map((intake) => (
+        {missedIntakes && missedIntakes.map((intake, index) => (
           <Card
-            key={intake.id}
+            key={index}
             sx={{
               borderRadius: 3,
               boxShadow: 2,
@@ -78,32 +83,32 @@ const MissedIntakes = () => {
               </Typography>
 
               <Typography variant="subtitle2" color="text.secondary" mt={0.5}>
-                {intake.plan.treatment.description}
+                {intake.treatmentDescription}
               </Typography>
 
               <Typography variant="body2" mt={0.5}>
-                План: {format(new Date(intake.plan.start), "dd.MM.yyyy")} —{" "}
-                {format(new Date(intake.plan.end), "dd.MM.yyyy")} | {intake.time}
+                План: {format(new Date(intake.planStart), "dd.MM.yyyy")} —{" "}
+                {format(new Date(intake.planEnd), "dd.MM.yyyy")} | {intake.time}
               </Typography>
 
               <List sx={{ mt: 1 }}>
-                  <ListItem key={1} disablePadding sx={{ py: 1 }}>
+                  <ListItem disablePadding sx={{ py: 1 }}>
                     <ListItemText
                       primaryTypographyProps={{ fontSize: 15 }}
-                      primary={`${intake.plan.medicine.name} — ${intake.weight} ${intake.measure.translate}`}
+                      primary={`${intake.medicineName} — ${intake.weight} ${intake.measure}`}
                     />
                   </ListItem>
               </List>
 
               <Stack direction="row" alignItems="center" spacing={2} mt={2}>
                 <Typography variant="subtitle1" fontWeight={500} mb={1}>
-                  15.03.2025
+                  {new Date(intake.date).toLocaleString('ru-RU')}
                 </Typography>
                 <Button
                   variant="contained"
                   color="success"
                   disabled={intake.accepted}
-                  onClick={() => handleSendCompletetion(intake.id)}
+                  onClick={() => handleSendCompletetion(intake)}
                 >
                   {waitCompletetions.has(intake.id) ? "Обработка..." : "Отметить как принято"}
                 </Button>

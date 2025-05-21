@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
+import { useSearchParams} from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -27,16 +28,24 @@ import { ruRU } from '@mui/x-date-pickers/locales';
 
 import { ru } from 'date-fns/locale/ru';
 import IndicatorMenu from "./IndicatorMenu";
+import InnerMenu from './InnerMenu.js';
 
 import { fetchMetricsRequest, fetchMetricsByNameRequest } from "./healthSlice";
 
+import { checkAuth } from './oauth2.js';
+
 const Statistic = () => {
+  const [searchParams] = useSearchParams();
+  checkAuth('http://localhost:3001/indicators', 'GET', "http://localhost:3001/oauth2/redirect", "http://localhost:3001/oauth2/refresh", window.location.href, searchParams);
+ 
   const metrics = useSelector((state) => state.health.metrics);
   const indicators = useSelector((state) => state.health.indicators);
   const [searchName, setSearchName] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const dispatch = useDispatch();
+
+  const routes = [{label: 'Добавить значение показателя', path: '/add-metric'}, {label: 'Добавленные значения', path: '/view-metric'}, {label: 'Динамика', path: '/metric-statistic'}];
 
   const SORT_OPTIONS = new Map();
   SORT_OPTIONS.set(1, {name: "Название", sort: "NAME"});
@@ -183,7 +192,7 @@ const MetricChart = ({ title, dataKey, color }) => (
 
   return (
     <div>
-    <IndicatorMenu></IndicatorMenu>
+    <InnerMenu routes={routes} />
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
         📊 Статистика по показателям

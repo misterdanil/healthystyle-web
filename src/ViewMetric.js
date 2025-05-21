@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams} from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -13,6 +14,9 @@ import {
 import { styled } from "@mui/material/styles";
 import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import IndicatorMenu from "./IndicatorMenu";
+import InnerMenu from './InnerMenu.js';
+
+import { checkAuth } from './oauth2.js';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -42,14 +46,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-// const sampleMetrics = [
-//   { id: 1, date: "2024-04-01 10:30", name: "Blood Sugar", value: "120 mg/dL" },
-//   { id: 2, date: "2024-04-02 08:45", name: "Weight", value: "75 kg" },
-//   { id: 3, date: "2024-04-01 12:00", name: "Height", value: "180 cm" },
-//   { id: 4, date: "2024-04-03 14:15", name: "Blood Pressure", value: "120/80" }
-// ];
-
 const ViewMetric = () => {
+   const [searchParams] = useSearchParams();
+  checkAuth('http://localhost:3001/metrics', 'GET', "http://localhost:3001/oauth2/redirect", "http://localhost:3001/oauth2/refresh", window.location.href, searchParams);
+     
   const indicators = useSelector((state) => state.health.indicators);
   const metrics = useSelector((state) => state.health.metrics);
   const loading = useSelector((state) => state.health.loading);
@@ -59,6 +59,8 @@ const ViewMetric = () => {
   const [metric, setMetric] = useState("all");
   const [orderBy, setOrderBy] = useState("date");
   const [order, setOrder] = useState("asc");
+
+  const routes = [{label: 'Добавить значение показателя', path: '/add-metric'}, {label: 'Добавленные значения', path: '/view-metric'}, {label: 'Динамика', path: '/metric-statistic'}];
 
   useEffect(() => {
       dispatch(fetchIndicatorsRequest({page: 0, limit: 25, sort: orderBy.toUpperCase(), direction: order.toUpperCase()}));
@@ -74,14 +76,6 @@ const ViewMetric = () => {
     else {
       dispatch(fetchIndicatorsRequest({page: 0, limit: 25, sort: orderBy.toUpperCase(), direction: order.toUpperCase()}));
     }
-    
-    // const sortedMetrics = [...indicators].sort((a, b) => {
-    //   if (a[column] < b[column]) return isAsc ? 1 : -1;
-    //   if (a[column] > b[column]) return isAsc ? -1 : 1;
-    //   return 0;
-    // });
-
-    // setMetrics(sortedMetrics);
   };
 
   const handleSetMetric = (metric) => {
@@ -96,9 +90,9 @@ const ViewMetric = () => {
 
   return (
     <div>
-        <IndicatorMenu></IndicatorMenu>
+    <InnerMenu routes={routes} />
         <FormControl fullWidth margin="normal" sx={{ padding: 3, width: 350 }}>
-                  <InputLabel>Select Metric</InputLabel>
+                  <InputLabel>Выбрать показатель</InputLabel>
                   <Select value={metric} onChange={(e) => handleSetMetric(e.target.value)}>
                   <MenuItem key="all" value="all">Все</MenuItem>
                     {metrics.map((m) => (
@@ -108,7 +102,7 @@ const ViewMetric = () => {
                 </FormControl>
     <StyledTableContainer component={Paper}>
       <Typography variant="h6" align="center" gutterBottom>
-        Health Metrics
+        Добавленные показатели
       </Typography>
       <Table>
         <StyledTableHead>
@@ -120,7 +114,7 @@ const ViewMetric = () => {
                 onClick={() => handleSort("date")}
                 style={{ color: "white" }}
               >
-                Date & Time
+                Дата и время
               </TableSortLabel>
             </StyledTableCell>
             <StyledTableCell>
@@ -130,7 +124,7 @@ const ViewMetric = () => {
                 onClick={() => handleSort("type")}
                 style={{ color: "white" }}
               >
-                Metric Name
+                Название показателя
               </TableSortLabel>
             </StyledTableCell>
             <StyledTableCell>
@@ -140,7 +134,7 @@ const ViewMetric = () => {
                 onClick={() => handleSort("value")}
                 style={{ color: "white" }}
               >
-                Value
+                Значение
               </TableSortLabel>
             </StyledTableCell>
           </TableRow>

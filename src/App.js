@@ -40,9 +40,30 @@ import AddTreatment from './medicine/AddTreatment.js';
 import PlannedIntakes from './medicine/PlannedIntakes.js';
 import MissedIntakes from './medicine/MissedIntakes.js';
 
+import MenuTest from './MenuTest.js';
+import InnerMenu from './InnerMenu.js';
+
+import Home from './Home.js';
+
 import store from './store';
 import { Provider } from 'react-redux';
 
+import { styled } from "@mui/system";
+
+
+const GradientBox = styled('div')(({ theme }) => ({
+  minHeight: '100vh',
+  display: 'flex',
+  flexDirection: 'column',
+  background: 'linear-gradient(-45deg, #d4eaf7, #cfe9dc, #f6f0d8, #e3eaf4)',
+  backgroundSize: '400% 400%',
+  animation: 'gradientMove 30s ease infinite',
+  '@keyframes gradientMove': {
+    '0%': { backgroundPosition: '0% 50%' },
+    '50%': { backgroundPosition: '100% 50%' },
+    '100%': { backgroundPosition: '0% 50%' },
+  },
+}));
 
 const pages = [
   { label: "Metrics", path: "/add-metric" },
@@ -87,9 +108,9 @@ function App() {
   const ReactDOMServer = require('react-dom/server');
 
   return (
-    <div className="">
+    <GradientBox>
       <Router>
-      <NavBar />
+      <MenuTest />
       <br/>
       <br />
       <br />
@@ -124,9 +145,10 @@ function App() {
         <Route path="/treatment" element={<AddTreatment />}></Route>
         <Route path="/intakes" element={<PlannedIntakes />}></Route>
         <Route path="/missed" element={<MissedIntakes />}></Route>
+        <Route path="/home" element={<Home />}></Route>
       </Routes>
       </Router>
-    </div>
+    </GradientBox>
   );
 }
 

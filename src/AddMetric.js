@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams} from "react-router-dom";
+
 import { Card, CardContent } from "@mui/material";
 import { Box, Button } from "@mui/material";
 import { TextField } from "@mui/material";
@@ -14,13 +16,21 @@ import {
 
 import IndicatorMenu from "./IndicatorMenu";
 
+import InnerMenu from './InnerMenu.js';
+
+import Menu from './InnerMenu';
+
 import { ruRU as coreRuRU } from '@mui/material/locale';
 import { ruRU } from '@mui/x-date-pickers/locales';
 
 import { ru } from 'date-fns/locale/ru';
 
+import { checkAuth } from './oauth2.js';
 
 const AddMetric = () => {
+  const [searchParams] = useSearchParams();
+  checkAuth('http://localhost:3001/metrics', 'GET', "http://localhost:3001/oauth2/redirect", "http://localhost:3001/oauth2/refresh", window.location.href, searchParams);
+   
   const metrics = useSelector((state) => state.health.metrics);
   const loading = useSelector((state) => state.health.loading);
   const error = useSelector((state) => state.health.error);
@@ -45,14 +55,16 @@ const AddMetric = () => {
   }
 }
 
+const routes = [{label: 'Добавить значение показателя', path: '/add-metric'}, {label: 'Добавленные значения', path: '/view-metric'}, {label: 'Динамика', path: '/metric-statistic'}];
+
   return (
     <div>
-    <IndicatorMenu />
-    <Card sx={{ padding: 3, width: 350 }}>
+    <InnerMenu routes={routes} />
+    <Card sx={{ padding: 3, width: 350, margin:'auto' }}>
       <CardContent component="form" onSubmit={handleSubmit}>
         <FormControl fullWidth margin="normal">
-          <InputLabel>Select Metric</InputLabel>
-          <Select value={metric} onChange={(e) => setMetric(e.target.value)}>
+          <InputLabel>Выбрать показатель здоровья</InputLabel>
+          <Select value={metric} onChange={(e) => setMetric(e.target.value)} label="Выбрать показатель здоровья">
             {metrics.map((m) => (
               <MenuItem key={m.id} value={m.id}>{m.name}</MenuItem>
             ))}
@@ -61,7 +73,7 @@ const AddMetric = () => {
 
         <TextField 
           fullWidth 
-          label="Enter Value" 
+          label="Введите значение показателя" 
           type="number" 
           value={value} 
           onChange={(e) => setValue(e.target.value)} 
@@ -70,7 +82,7 @@ const AddMetric = () => {
 
         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ru}>
           <DateTimePicker 
-            label="Select Date" 
+            label="Выбрать дату и время" 
             value={date} 
             onChange={(newDate) => setDate(newDate)}
             renderInput={(params) => <TextField fullWidth margin="normal" {...params} />}
@@ -78,7 +90,7 @@ const AddMetric = () => {
         </LocalizationProvider>
 
         <Button variant="contained" color="primary" fullWidth sx={{ marginTop: 2 }} type="submit">
-          Submit
+          Сохранить
         </Button>
       </CardContent>
     </Card>

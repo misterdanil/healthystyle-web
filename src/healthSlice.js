@@ -47,7 +47,10 @@ const initialState = {
   intakes: [],
   nextIntakes: [],
   addedIntakeResult: null,
-  missedIntakes: []
+  missedIntakes: [],
+  username: null,
+  notifications: [],
+  countUnwatched: null
 };
 
 const healthSlice = createSlice({
@@ -676,6 +679,39 @@ const healthSlice = createSlice({
   fetchMissedIntakesFailure(state, action) {
     state.loading = false;
     state.error = action.payload;
+  },
+  fetchUsernameRequest(state, action) {
+    state.loading = true;
+  },
+  fetchUsernameSuccess(state, action) {
+    state.loading = false;
+    state.username = action.payload;
+  },
+  fetchUsernameFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchNotificationsRequest(state, action) {
+    state.loading = true;
+  },
+  fetchNotificationsSuccess(state, action) {
+    state.loading = false;
+    state.notifications = action.payload.content;
+  },
+  fetchNotificationsFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
+  },
+  fetchCountUnwatchedRequest(state, action) {
+    state.loading = true;
+  },
+  fetchCountUnwatchedSuccess(state, action) {
+    state.loading = false;
+    state.notifications = action.payload.content;
+  },
+  fetchCountUnwatchedFailure(state, action) {
+    state.loading = false;
+    state.error = action.payload;
   }
   },
 });
@@ -837,7 +873,16 @@ export const {
   addIntakeResultFailure,
   fetchMissedIntakesRequest,
   fetchMissedIntakesSuccess,
-  fetchMissedIntakesFailure
+  fetchMissedIntakesFailure,
+  fetchUsernameRequest,
+  fetchUsernameSuccess,
+  fetchUsernameFailure,
+  fetchNotificationsRequest,
+  fetchNotificationsSuccess,
+  fetchNotificationsFailure,
+  fetchCountUnwatchedRequest,
+  fetchCountUnwatchedSuccess,
+  fetchCountUnwatchedFailure
 } = healthSlice.actions;
 
 export default healthSlice.reducer;
